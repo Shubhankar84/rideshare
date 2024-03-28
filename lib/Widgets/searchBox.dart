@@ -128,7 +128,7 @@ class _SearchBoxState extends State<SearchBox> {
                 onTap: () async {
                   await Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return GoogleMapSearchPlacesApi(str: "source");
+                    return GoogleMapSearchPlacesApi(str: "source", n: 0,);
                   }));
                   setState(() {
                     selectedSource = provider.source['add'];
@@ -168,7 +168,7 @@ class _SearchBoxState extends State<SearchBox> {
                 onTap: () async {
                   await Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return GoogleMapSearchPlacesApi(str: "dest");
+                    return GoogleMapSearchPlacesApi(str: "dest", n: 0,);
                   }));
                   setState(() {
                     selectedDest = provider.dest['add'];

@@ -13,15 +13,20 @@ import 'package:rideshare/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+var Globaltoken;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var token = prefs.getString('token');
+  Globaltoken = token;
   bool validated = false;
   print("token in main.dart: $token");
 
   // ----------------------------------------------------------
   if (token != null) {
+    CartProvider cartProvider = CartProvider();
+    cartProvider.set_token(token);
+
     Map<String, dynamic> jwtDecodeToken = JwtDecoder.decode(token.toString());
     var userId = jwtDecodeToken['_id'];
     var regBody = {

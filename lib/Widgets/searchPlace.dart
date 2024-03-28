@@ -10,8 +10,10 @@ import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
 class GoogleMapSearchPlacesApi extends StatefulWidget {
+  final int n;
   final String str;
-  const GoogleMapSearchPlacesApi({super.key, required this.str});
+  const GoogleMapSearchPlacesApi(
+      {super.key, required this.str, required this.n});
 
   @override
   _GoogleMapSearchPlacesApiState createState() =>
@@ -112,15 +114,31 @@ class _GoogleMapSearchPlacesApiState extends State<GoogleMapSearchPlacesApi> {
                     // location[0] = locations.last.longitude;
                     // location[1] = locations.last.latitude;
                     print("location add: ${_placeList[index]['description']}");
-                    if (widget.str == "source") {
-                      provider.source['latitude'] = locations.last.latitude;
-                      provider.source['longitude'] = locations.last.longitude;
-                      provider.source['add'] = _placeList[index]['description'];
+                    if (widget.n == 0) {
+                      if (widget.str == "source") {
+                        provider.source['latitude'] = locations.last.latitude;
+                        provider.source['longitude'] = locations.last.longitude;
+                        provider.source['add'] =
+                            _placeList[index]['description'];
+                      }
+                      if (widget.str == "dest") {
+                        provider.dest['latitude'] = locations.last.latitude;
+                        provider.dest['longitude'] = locations.last.longitude;
+                        provider.dest['add'] = _placeList[index]['description'];
+                      }
                     }
-                    if (widget.str == "dest") {
-                      provider.dest['latitude'] = locations.last.latitude;
-                      provider.dest['longitude'] = locations.last.longitude;
-                      provider.dest['add'] = _placeList[index]['description'];
+                    else{
+                      if (widget.str == "source") {
+                        provider.source2['latitude'] = locations.last.latitude;
+                        provider.source2['longitude'] = locations.last.longitude;
+                        provider.source2['add'] =
+                            _placeList[index]['description'];
+                      }
+                      if (widget.str == "dest") {
+                        provider.dest2['latitude'] = locations.last.latitude;
+                        provider.dest2['longitude'] = locations.last.longitude;
+                        provider.dest2['add'] = _placeList[index]['description'];
+                      }
                     }
 
                     print("source cartProvider: ${provider.source}");

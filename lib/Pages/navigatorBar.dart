@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:rideshare/Pages/HomeScreen.dart';
 import 'package:rideshare/Pages/PublishRide.dart';
+import 'package:rideshare/Pages/bookedrides/bookedRides.dart';
 import 'package:rideshare/Pages/profile.dart';
 import 'package:rideshare/Pages/searchride.dart';
 import 'package:rideshare/Pages/yourRide.dart';
+import 'package:rideshare/config.dart';
+import 'package:rideshare/main.dart';
+import 'package:http/http.dart' as http;
 
 class NavigatonBar extends StatefulWidget {
   const NavigatonBar({super.key});
@@ -14,10 +21,11 @@ class NavigatonBar extends StatefulWidget {
 
 class _NavigatonBarState extends State<NavigatonBar> {
   int currentPage = 0;
-  List<Widget> Pages = const [
+  List ride = [] ;
+  List<Widget> Pages =  [
     SearchRide(),
-    PublishRidePage(),
-    YourRidesPage(),
+    YourRidesPage(), // need  to be delete this
+    BookedRides(),
     ProfilePage(
       userData: {
         'firstName': 'John',
@@ -30,7 +38,8 @@ class _NavigatonBarState extends State<NavigatonBar> {
         'carNo': 'XYZ123',
         'seatsInCar': '5',
       },
-    )
+    ),
+    PublishRidePage(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -39,7 +48,7 @@ class _NavigatonBarState extends State<NavigatonBar> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {
-              currentPage = 1;
+              currentPage = 4;
             });
           },
           child: Icon(
@@ -86,6 +95,9 @@ class _NavigatonBarState extends State<NavigatonBar> {
                 ),
                 onPressed: () {
                   // Handle chat button press
+                  setState(() {
+                    currentPage = 1;
+                  });
                 },
               ),
               Spacer(),
@@ -94,8 +106,31 @@ class _NavigatonBarState extends State<NavigatonBar> {
                   Icons.directions_car,
                   size: 35,
                 ),
-                onPressed: () {
+                onPressed: () async {
                   // Handle your rides button press
+                  Map<String, dynamic> jwtDecodeToken =
+                      JwtDecoder.decode(Globaltoken.toString());
+                  var userId = jwtDecodeToken['_id'];
+
+                  print(userId);
+
+                  var regBody = {
+                    "userId": userId,
+                  };
+
+                  print("Inside get booked rides: ");
+
+                  var response = await http.post(Uri.parse(getbookedrides),
+                      headers: {"Content-Type": "application/json"},
+                      body: jsonEncode(regBody));
+
+                  var jsonResponse = jsonDecode(response.body);
+                  print("json response:");
+                  print(jsonResponse['status']);
+                  // print(jsonResponse);
+
+                  ride = jsonResponse['bookedRides'];
+                  print(ride);
                   setState(() {
                     currentPage = 2;
                   });
