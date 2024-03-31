@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:rideshare/Pages/bookedrides/rideBookedDetails.dart';
 import 'package:rideshare/Pages/rideDetails.dart';
 
@@ -12,12 +13,26 @@ class RideCard extends StatefulWidget {
 }
 
 class _RideCardState extends State<RideCard> {
+  int requests = 0;
+
+  void calculateRequestBookingCount() {
+    for (var booking in widget.ride['requestedBooking']) {
+      if (booking['status'] == 'Requested') {
+        requests++;
+      }
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     print("inside ride card ${widget.ride.length}");
     print("${widget.ride}");
+    if (widget.fromWhichPage == 2) {
+      calculateRequestBookingCount();
+    }
+    print("Requests for ride is: $requests");
   }
 
   @override
@@ -37,9 +52,17 @@ class _RideCardState extends State<RideCard> {
         child: Container(
           height: 225,
           decoration: BoxDecoration(
-              color: Colors.white70,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.orange, width: 2)),
+            color: Colors.white70,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
             child: Column(
@@ -131,48 +154,126 @@ class _RideCardState extends State<RideCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      height: 30,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 216, 212, 212),
-                      ),
-                      child: Center(child: Text('Started')),
-                    ),
-                    Container(
-                      height: 30,
-                      width: 70,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 216, 212, 212),
-                      ),
-                      child: Center(
-                          child: Row(
-                        children: [
-                          Icon(Icons.person),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                              '${widget.ride['seats'] - widget.ride['bookedSeats']}'),
-                        ],
-                      )),
-                    ),
-                    Container(
-                      height: 30,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 216, 212, 212),
-                      ),
-                      child: Center(child: Text('Requested')),
-                    ),
-                    // _buildCard('name', 'age', 'rating', 'imageUrl'),
-                    // _buildCard('name', 'age', 'rating', 'imageUrl'),
+                    (widget.fromWhichPage == 0)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                height: 30,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  // border: Border.all(color: Colors.grey, width: 1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color:
+                                      const Color.fromARGB(255, 216, 212, 212),
+                                ),
+                                child: Center(child: Text('Started')),
+                              ),
+                              Container(
+                                height: 30,
+                                width: 70,
+                                decoration: BoxDecoration(
+                                  // border: Border.all(color: Colors.grey, width: 1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color:
+                                      const Color.fromARGB(255, 216, 212, 212),
+                                ),
+                                child: Center(
+                                    child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 7,
+                                    ),
+                                    Icon(Icons.person),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                        '${widget.ride['seats'] - widget.ride['bookedSeats']}'),
+                                  ],
+                                )),
+                              ),
+                              Container(
+                                height: 30,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  // border: Border.all(color: Colors.grey, width: 1),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color:
+                                      const Color.fromARGB(255, 216, 212, 212),
+                                ),
+                                child: Center(child: Text('Requested')),
+                              ),
+                            ],
+                          )
+                        : (widget.fromWhichPage == 2)
+                            ? Expanded(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    // for published rides
+                                    Container(
+                                      height: 30,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        // border: Border.all(color: Colors.grey, width: 1),
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: const Color.fromARGB(
+                                            255, 216, 212, 212),
+                                      ),
+                                      child: Center(
+                                          child: Text('Pending: $requests')),
+                                    ),
+                                    Container(
+                                      height: 30,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        // border: Border.all(color: Colors.grey, width: 1),
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: const Color.fromARGB(
+                                            255, 216, 212, 212),
+                                      ),
+                                      child: Center(
+                                          child: Text(
+                                              'Booked: ${widget.ride['bookedSeats']}/${widget.ride['seats']}')),
+                                    )
+                                  ],
+                                ),
+                              )
+                            : Expanded(
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    // for booked rides i.e. fromwhichpage is 1 here
+                                    Container(
+                                      height: 30,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        // border: Border.all(color: Colors.grey, width: 1),
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: const Color.fromARGB(
+                                            255, 216, 212, 212),
+                                      ),
+                                      child: Center(child: Text('Started')),
+                                    ),
+                                    Container(
+                                      height: 30,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        // border: Border.all(color: Colors.grey, width: 1),
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: const Color.fromARGB(
+                                            255, 216, 212, 212),
+                                      ),
+                                      child: Center(
+                                          child: Text(
+                                              'Requested')),
+                                    )
+                                  ],
+                                ),
+                            )
                   ],
                 )
               ],

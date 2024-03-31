@@ -120,17 +120,17 @@ class _NavigatonBarState extends State<NavigatonBar> {
 
                   print("Inside get booked rides: ");
 
-                  var response = await http.post(Uri.parse(getbookedrides),
-                      headers: {"Content-Type": "application/json"},
-                      body: jsonEncode(regBody));
+                  // var response = await http.post(Uri.parse(getbookedrides),
+                  //     headers: {"Content-Type": "application/json"},
+                  //     body: jsonEncode(regBody));
 
-                  var jsonResponse = jsonDecode(response.body);
-                  print("json response:");
-                  print(jsonResponse['status']);
-                  // print(jsonResponse);
+                  // var jsonResponse = jsonDecode(response.body);
+                  // print("json response:");
+                  // print(jsonResponse['status']);
+                  // // print(jsonResponse);
 
-                  ride = jsonResponse['bookedRides'];
-                  print(ride);
+                  // ride = jsonResponse['bookedRides'];
+                  // print(ride);
                   setState(() {
                     currentPage = 2;
                   });
