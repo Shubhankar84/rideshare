@@ -1,4 +1,6 @@
-const url = 'http://192.168.0.162:3000/';
+// const url = 'http://192.168.0.162:3000/';
+const url = 'https://ridesharing-backend.onrender.com/';
+// http://localhost:3000/login
 
 const registration = url + "registration";
 const login = url + "login";

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:rideshare/Pages/bookedrides/bookedRides.dart';
+import 'package:rideshare/Pages/maps_page.dart/tracking.dart';
 import 'package:rideshare/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:rideshare/main.dart';
@@ -74,7 +75,7 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
         // })));
       } else {
         Navigator.pop(context);
-        showQuickAlert(QuickAlertType.error, "error", "Cannot set request");
+        showQuickAlert(QuickAlertType.error, "error", "error occured");
       }
     } catch (e) {
       print(e);
@@ -193,6 +194,36 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                 title: Text(
                     '${widget.rideInfo['userDetails'][0]['carDetails'][0]['carName']}'),
                 subtitle: Text('Color: Red'),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              GestureDetector(
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
+                    return LiveTracking();
+                  })));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'See route on maps',
+                      style: TextStyle(fontSize: 20, color: Colors.green),
+                    ),
+                    Container(
+                      height: 60,
+                      width: 130,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          image: DecorationImage(
+                              image: NetworkImage(
+                                  'https://static.vecteezy.com/system/resources/thumbnails/020/995/200/small/3d-minimal-map-icon-navigation-icon-marking-a-position-map-with-a-location-pin-icon-3d-rendering-illustration-png.png'),
+                                  fit: BoxFit.fill
+                                  )),
+                    )
+                  ],
+                ),
               ),
               SizedBox(
                 height: 20,
