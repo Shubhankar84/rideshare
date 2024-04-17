@@ -201,7 +201,9 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
               GestureDetector(
                 onTap: (){
                   Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-                    return LiveTracking();
+                    print('Source location to send to live maps: ${widget.rideInfo['source']}');
+                    print('Dest location to send to live maps: ${widget.rideInfo['dest']}');
+                    return LiveTracking(source: widget.rideInfo['source'], dest: widget.rideInfo['dest']);
                   })));
                 },
                 child: Row(

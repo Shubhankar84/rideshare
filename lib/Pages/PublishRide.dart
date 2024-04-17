@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:provider/provider.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:rideshare/Pages/carModel.dart';
 import 'package:rideshare/Widgets/searchPlace.dart';
 import 'package:rideshare/cartProvider.dart';
@@ -27,6 +29,7 @@ class _PublishRidePageState extends State<PublishRidePage> {
   String? selectedDest;
   TextEditingController _carNameController = TextEditingController();
   TextEditingController _carNoController = TextEditingController();
+  TextEditingController _priceController = TextEditingController();
   bool validate = false;
 
   void _incrementPassengers() {
@@ -91,6 +94,7 @@ class _PublishRidePageState extends State<PublishRidePage> {
     void publishRide() async {
       String carName = _carNameController.text.trim();
       String carNo = _carNoController.text.trim();
+      String price = _priceController.text.trim();
 
       if (selectedSource != null &&
           selectedDest != null &&
@@ -115,7 +119,7 @@ class _PublishRidePageState extends State<PublishRidePage> {
         print("selected source: $carNo");
         validate = true;
         Map<String, dynamic> jwtDecodeToken =
-        JwtDecoder.decode(Globaltoken.toString());
+            JwtDecoder.decode(Globaltoken.toString());
         var userId = jwtDecodeToken['_id'];
         print('scrtimehourrrrrrr: ${srcTime!.hour}:${srcTime!.minute}');
 
@@ -123,16 +127,16 @@ class _PublishRidePageState extends State<PublishRidePage> {
           "userId": userId,
           "source": source,
           "dest": dest,
-          "srcAdd":selectedSource,
+          "srcAdd": selectedSource,
           "destAdd": selectedDest,
           "srcTime": "${srcTime!.hour}:${srcTime!.minute}",
           "destTime": "${destTime!.hour}:${destTime!.minute}",
           "date":
               "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}",
-          "carName":carName,
+          "carName": carName,
           "carNo": carNo,
           "seats": _passengers,
-          "price": 300,
+          "price": price,
         };
 
         var response = await http.post(Uri.parse(createRide),
@@ -143,7 +147,31 @@ class _PublishRidePageState extends State<PublishRidePage> {
         print("json response:");
         print(jsonResponse['status']);
 
-        setState(() {});
+        setState(() {
+          _passengers = 1;
+          selectedDate = DateTime.now();
+          srcTime = null;
+          destTime = null;
+          selectedSource = null;
+          selectedDest = null;
+          _carNameController.clear();
+          _carNoController.clear();
+        });
+
+        
+        if (jsonResponse['status']) {
+          QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            text: "Publised Ride successfully!!",
+          );
+        } else {
+          QuickAlert.show(
+              context: context,
+              type: QuickAlertType.error,
+              text: "Error: Ride not published");
+        }
+
       } else {
         validate = false;
         setState(() {});
@@ -386,7 +414,7 @@ class _PublishRidePageState extends State<PublishRidePage> {
 
                                     if (datePicked != null) {
                                       print(
-                                          "Selected datde ${datePicked.day}-${datePicked.month}-${datePicked.year}");
+                                          "Selected date ${datePicked.day}-${datePicked.month}-${datePicked.year}");
                                       setState(() {
                                         selectedDate = datePicked;
                                       });
@@ -445,9 +473,18 @@ class _PublishRidePageState extends State<PublishRidePage> {
                         height: 10,
                       ),
                       TextField(
+                        keyboardType: TextInputType.number,
                         controller: _carNoController,
                         decoration: InputDecoration(
-                          labelText: 'Car Name',
+                          labelText: 'Car No',
+                          // border: OutlineInputBorder(),
+                        ),
+                      ),
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        controller: _priceController,
+                        decoration: InputDecoration(
+                          labelText: 'Set Price for 1 passanger',
                           // border: OutlineInputBorder(),
                         ),
                       ),

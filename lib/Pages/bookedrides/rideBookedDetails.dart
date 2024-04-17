@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:rideshare/main.dart';
 
@@ -15,7 +16,7 @@ class BookedRideDetails extends StatefulWidget {
 class _BookedRideDetailsState extends State<BookedRideDetails> {
   int seatsAvailable = 0;
   List requests = [];
-  double h = 100;
+  double h = 90;
   bool showRideDetails = false;
 
   void addRequest() {
@@ -45,7 +46,7 @@ class _BookedRideDetailsState extends State<BookedRideDetails> {
     seatsAvailable = widget.rideInfo['seats'] - widget.rideInfo['bookedSeats'];
     addRequest();
     print("Request length is: ${requests.length}");
-    h = requests.length * 80;
+    h = requests.length * 90;
     print(h);
   }
 
@@ -120,58 +121,67 @@ class _BookedRideDetailsState extends State<BookedRideDetails> {
               Container(
                 height: h,
                 child: ListView.builder(
-                    itemCount: requests.length,
-                    itemBuilder: ((context, index) {
-                      print(
-                          "Request at index ${index}, seats: ${requests[index]['reqseats']}");
-                      print(
-                          "Request at index ${index}, seats: ${requests[index]['status']}");
-                      var st = requests[index]['status'];
-                      return Column(
-                        children: [
-                          Container(
-                            height: 70,
-                            decoration: BoxDecoration(
-                                color: (st == 'Requested')
-                                    ? Colors.yellow
-                                    : (st == "Approved")
+                  itemCount: requests.length,
+                  itemBuilder: ((context, index) {
+                    var status = requests[index]['status'];
+                    return Column(
+                      children: [
+                        SizedBox(height: 15),
+                        ListTile(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(color: Colors.black),
+                          ),
+                          tileColor: (status == "Requested")
+                              ? Color.fromARGB(255, 220, 236, 200)
+                              : Colors.white,
+                          title: Text(
+                            'Seats: ${requests[index]['reqseats']}',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            DateFormat('dd-MM-yyyy').format(
+                              DateTime.parse(requests[index]['date']),
+                            ),
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                (status == "Requested")
+                                    ? Icons.pending_actions_rounded
+                                    : (status == "Approved")
+                                        ? Icons.check
+                                        : Icons.close,
+                                color: (status == "Requested")
+                                    ? Colors.blue
+                                    : (status == "Approved")
                                         ? Colors.green
                                         : Colors.red,
-                                border: Border.all(),
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 10.0, right: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Text(
-                                          'Seats: ${requests[index]['reqseats']}'),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text('12-14-2024'),
-                                    ],
-                                  ),
-                                  Text('${requests[index]['status']}'),
-                                  Icon((st == "Requested")
-                                      ? Icons.pending_actions_rounded
-                                      : (st == "Approved")
-                                          ? Icons.check
-                                          : Icons.close)
-                                ],
+                                size: 30,
                               ),
-                            ),
+                              SizedBox(width: 5),
+                              Text(
+                                status,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: (status == "Requested")
+                                      ? Colors.blue
+                                      : (status == "Approved")
+                                          ? Colors.green
+                                          : Colors.red,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            height: 15,
-                          )
-                        ],
-                      );
-                    })),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
               ),
               SizedBox(
                 height: 20,
